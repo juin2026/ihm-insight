@@ -106,29 +106,11 @@ def get_media_insights(token: str, media_id: str, media_type: str) -> dict:
 
     common = ["reach", "likes", "comments", "saved", "shares"]
 
-    if media_type in ("IMAGE", "CAROUSEL_ALBUM"):
-        extras = ["impressions", "profile_visits", "follows"]
-    else:
-        extras = []
-
-    # Try common + extras in one request; fall back to common-only on error
     try:
-        body = _get(url, {"metric": ",".join(common + extras), "access_token": token}, timeout=20)
+        body = _get(url, {"metric": ",".join(common), "access_token": token}, timeout=20)
         insights.update(_parse_insights(body.get("data", [])))
     except Exception:
-        try:
-            body = _get(url, {"metric": ",".join(common), "access_token": token}, timeout=20)
-            insights.update(_parse_insights(body.get("data", [])))
-        except Exception:
-            pass
-
-        for metric in extras:
-            if metric not in insights:
-                try:
-                    body = _get(url, {"metric": metric, "access_token": token}, timeout=10)
-                    insights.update(_parse_insights(body.get("data", [])))
-                except Exception:
-                    pass
+        pass
 
     # REELS/VIDEO: try views → plays → video_views
     if media_type in ("REELS", "VIDEO"):
@@ -174,9 +156,6 @@ def fetch_insights(progress_callback=None) -> pd.DataFrame:
         saved = int(ins.get("saved") or 0)
         shares = int(ins.get("shares") or 0)
         views = int(ins.get("views") or 0)
-        impressions = int(ins.get("impressions") or 0)
-        profile_visits = int(ins.get("profile_visits") or 0)
-        follows = int(ins.get("follows") or 0)
 
         engagement_rate = (likes + comments + saved + shares) / reach * 100 if reach else 0.0
         share_rate = shares / reach * 100 if reach else 0.0
@@ -195,12 +174,9 @@ def fetch_insights(progress_callback=None) -> pd.DataFrame:
             "저장": saved,
             "공유": shares,
             "조회수": views,
-            "노출": impressions,
-            "프로필방문": profile_visits,
-            "팔로우": follows,
             "참여율(%)": round(engagement_rate, 2),
             "공유율(%)": round(share_rate, 2),
-            "조회완료율(%)": round(completion_rate, 2),
+            "반복시청률(%)": round(completion_rate, 2),
         })
 
         time.sleep(0.1)  # API rate limit 준수

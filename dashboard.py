@@ -118,29 +118,24 @@ def _section(title: str):
 
 def _kpi_row(df: pd.DataFrame):
     _section("📈 전체 합계")
-    c1, c2, c3, c4, c5 = st.columns(5)
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
     c1.metric("👁 도달", f"{df['도달'].sum():,}")
     c2.metric("❤️ 좋아요", f"{df['좋아요'].sum():,}")
     c3.metric("💬 댓글", f"{df['댓글'].sum():,}")
     c4.metric("🔖 저장", f"{df['저장'].sum():,}")
     c5.metric("↗️ 공유", f"{df['공유'].sum():,}")
-
-    c6, c7, c8, c9, _ = st.columns(5)
     c6.metric("▶️ 조회수", f"{df['조회수'].sum():,}")
-    c7.metric("📢 노출", f"{df['노출'].sum():,}")
-    c8.metric("👤 프로필방문", f"{df['프로필방문'].sum():,}")
-    c9.metric("➕ 팔로우", f"{df['팔로우'].sum():,}")
 
 
 def _avg_row(df: pd.DataFrame):
     _section("🎯 평균 성과율")
     rv_sub = df[df["미디어타입_원본"].isin(["REELS", "VIDEO"])]
-    completion = rv_sub["조회완료율(%)"].mean() if not rv_sub.empty else 0.0
+    completion = rv_sub["반복시청률(%)"].mean() if not rv_sub.empty else 0.0
 
     c1, c2, c3 = st.columns(3)
     c1.metric("💚 평균 참여율", f"{df['참여율(%)'].mean():.2f}%")
     c2.metric("🔁 평균 공유율", f"{df['공유율(%)'].mean():.2f}%")
-    c3.metric("🎬 평균 조회완료율 (릴스·영상)", f"{completion:.2f}%")
+    c3.metric("🎬 평균 반복시청률 (릴스·영상)", f"{completion:.2f}%")
 
 
 def _type_compare_chart(df: pd.DataFrame, tab_key: str):

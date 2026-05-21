@@ -12,9 +12,8 @@ except ImportError:
 
 DISPLAY_COLS = [
     "날짜", "미디어타입", "캡션", "링크",
-    "도달", "좋아요", "댓글", "저장", "공유",
-    "조회수", "노출", "프로필방문", "팔로우",
-    "참여율(%)", "공유율(%)", "조회완료율(%)",
+    "도달", "좋아요", "댓글", "저장", "공유", "조회수",
+    "참여율(%)", "공유율(%)", "반복시청률(%)",
 ]
 
 
@@ -51,16 +50,15 @@ def _build_summary(df: pd.DataFrame) -> pd.DataFrame:
             sub["저장"].sum(),
             sub["공유"].sum(),
             sub["조회수"].sum(),
-            sub["노출"].sum(),
             round(sub["참여율(%)"].mean(), 2) if len(sub) else 0,
             round(sub["공유율(%)"].mean(), 2) if len(sub) else 0,
-            round(sub["조회완료율(%)"].mean(), 2) if len(sub) else 0,
+            round(sub["반복시청률(%)"].mean(), 2) if len(sub) else 0,
         ]
 
     labels = [
         "총 게시물", "총 도달", "총 좋아요", "총 댓글", "총 저장", "총 공유",
-        "총 조회수", "총 노출",
-        "평균 참여율(%)", "평균 공유율(%)", "평균 조회완료율(%)",
+        "총 조회수",
+        "평균 참여율(%)", "평균 공유율(%)", "평균 반복시청률(%)",
     ]
 
     return pd.DataFrame({
